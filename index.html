@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>날씨 조회</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 외부 CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="weather-app">
+    <h1>날씨 검색</h1>
+
+    <section class="search-area">
+      <input
+        type="text"
+        id="cityInput"
+        placeholder="도시명을 입력하세요. 예) Seoul"
+      />
+      <button id="searchBtn" type="button">검색</button>
+    </section>
+
+    <section class="weather-info">
+      <!-- 현재 온도 -->
+      <div id="temp">--°C</div>
+      <!-- 날씨 상태 -->
+      <div id="description">도시를 검색해보세요.</div>
+    </section>
+
+    <!-- 상태 / 오류 메시지용 -->
+    <p id="statusMessage"></p>
+  </main>
+
+  <!-- 외부 JS (defer로 DOM 파싱 후 실행) -->
+  <script src="script.js" defer></script>
+</body>
+</html>
+
