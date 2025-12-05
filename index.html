@@ -2,37 +2,96 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>날씨 조회</title>
+  <title>나만의 날씨 예보</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- 외부 CSS -->
+
+  <!-- 스타일 -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Chart.js (그래프용) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- yzhanWeather (비/눈 배경 애니메이션) -->
+  <script src="https://cdn.jsdelivr.net/npm/yzhanweather@latest/docs/yzhanweather.min.js"></script>
 </head>
 <body>
-  <main class="weather-app">
-    <h1>날씨 검색</h1>
+  <div class="app">
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">☀️</span>
+        <span class="logo-text">My Weather</span>
+      </div>
 
-    <section class="search-area">
-      <input
-        type="text"
-        id="cityInput"
-        placeholder="도시명을 입력하세요. 예) Seoul"
-      />
-      <button id="searchBtn" type="button">검색</button>
-    </section>
+      <div class="search-bar">
+        <input type="text" id="cityInput" placeholder="도시 입력 (예: Seoul)" />
+        <button id="searchBtn">검색</button>
+      </div>
 
-    <section class="weather-info">
-      <!-- 현재 온도 -->
-      <div id="temp">--°C</div>
-      <!-- 날씨 상태 -->
-      <div id="description">도시를 검색해보세요.</div>
-    </section>
+      <button id="unitToggle" class="unit-toggle">단위: ℃</button>
+      <button id="gpsBtn" class="gps-btn">📍 현재 위치</button>
+    </header>
 
-    <!-- 상태 / 오류 메시지용 -->
-    <p id="statusMessage"></p>
-  </main>
+    <main class="main">
+      <!-- 에러 메시지 -->
+      <p id="errorMessage" class="error-message hidden"></p>
 
-  <!-- 외부 JS (defer로 DOM 파싱 후 실행) -->
-  <script src="script.js" defer></script>
+      <!-- 현재 날씨 -->
+      <section id="currentWeather" class="card current-weather hidden">
+        <div class="current-header">
+          <div>
+            <h2 id="cityName" class="city-name"></h2>
+            <p id="currentDate" class="current-date"></p>
+          </div>
+          <div class="current-main">
+            <img id="weatherIcon" class="weather-icon" alt="날씨 아이콘" />
+            <div>
+              <p id="temperature" class="temperature"></p>
+              <p id="description" class="description"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="current-details">
+          <div class="detail-item"><span>체감온도</span><strong id="feelsLike"></strong></div>
+          <div class="detail-item"><span>습도</span><strong id="humidity"></strong></div>
+          <div class="detail-item"><span>풍속</span><strong id="wind"></strong></div>
+          <div class="detail-item"><span>일출</span><strong id="sunrise"></strong></div>
+          <div class="detail-item"><span>일몰</span><strong id="sunset"></strong></div>
+        </div>
+      </section>
+
+      <!-- 공기질 -->
+      <section id="airQualitySection" class="card air-quality hidden">
+        <h3>공기질</h3>
+        <p id="airQualityIndex"></p>
+        <p id="airQualityDesc"></p>
+      </section>
+
+      <!-- 추천 옷차림 -->
+      <section id="outfitSection" class="card outfit hidden">
+        <h3>추천 옷차림</h3>
+        <p id="outfitText"></p>
+      </section>
+
+      <!-- 시간별 온도 그래프 -->
+      <section id="chartSection" class="card chart-card hidden">
+        <h3>시간별 온도 변화</h3>
+        <canvas id="tempChart"></canvas>
+      </section>
+
+      <!-- 3~5일 단기 예보 -->
+      <section id="forecastSection" class="card forecast-card hidden">
+        <h3>단기 예보</h3>
+        <div id="forecastContainer" class="forecast-container"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      © 2025 My Weather Project
+    </footer>
+  </div>
+
+  <!-- 메인 스크립트 -->
+  <script src="script.js"></script>
 </body>
 </html>
-

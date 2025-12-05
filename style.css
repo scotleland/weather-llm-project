@@ -1,128 +1,297 @@
-/* ========== 기본 설정 ========== */
-* {
-  box-sizing: border-box;
+/* 기본 초기화 */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  font-family: system-ui, sans-serif;
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f3f4f6; /* 깔끔한 회색 배경 */
-  color: #111827;
+  overflow-x: hidden;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: #fff;
 }
 
-/* ========== 컨테이너 (모바일 우선) ========== */
-.weather-app {
+/* 낮/밤 테마 */
+body.theme-day {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+body.theme-night {
+  background: radial-gradient(circle at top, #1a2a6c, #000428 60%);
+}
+
+/* 날씨별 색감 배경 */
+body.weather-clear::before,
+body.weather-clouds::before,
+body.weather-rain::before,
+body.weather-snow::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: 0.25;
+  background-size: 200% 200%;
+  animation: floatBg 15s linear infinite;
+  pointer-events: none;
+  z-index: -2;
+}
+
+@keyframes floatBg {
+  0% { background-position: 0 0; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0 0; }
+}
+
+body.weather-clear::before {
+  background-image:
+    radial-gradient(circle, #fff59d 0%, transparent 70%),
+    radial-gradient(circle, #81d4fa 0%, transparent 70%);
+}
+body.weather-clouds::before {
+  background-image:
+    radial-gradient(circle, #eceff1 0%, transparent 70%),
+    radial-gradient(circle, #90a4ae 0%, transparent 70%);
+}
+body.weather-rain::before {
+  background-image:
+    radial-gradient(circle, #90caf9 0%, transparent 70%),
+    radial-gradient(circle, #263238 0%, transparent 70%);
+}
+body.weather-snow::before {
+  background-image:
+    radial-gradient(circle, #ffffff 0%, transparent 70%),
+    radial-gradient(circle, #b0bec5 0%, transparent 70%);
+}
+
+/* yzhanWeather 비/눈 애니메이션 전체 화면 적용 */
+.yzhanWeather {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+/* 앱 컨테이너 */
+.app {
+  max-width: 960px;
   width: 100%;
-  max-width: 420px; /* PC에서 너무 넓어지지 않도록 */
-  margin: 16px;
-  padding: 20px 20px 24px;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  margin: 20px auto;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
 }
 
-.weather-app h1 {
-  font-size: 1.4rem;
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-/* ========== 검색 영역 ========== */
-.search-area {
+/* 헤더 */
+.header {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  flex-wrap: wrap; /* 좁은 화면에서 줄바꿈 허용 */
+  align-items: center;
+  gap: 10px;
 }
 
-#cityInput {
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.logo-icon {
+  font-size: 1.4rem;
+}
+
+/* 검색바: 가로 한 줄 정렬 */
+.search-bar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
   flex: 1;
-  padding: 10px 12px;
+  align-items: center;
+}
+
+.search-bar input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 12px;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
-  font-size: 0.95rem;
+  border: none;
   outline: none;
 }
 
-#cityInput:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-#searchBtn {
-  padding: 10px 16px;
+.search-bar button {
+  padding: 8px 16px;
   border-radius: 999px;
   border: none;
-  cursor: pointer;
-  background: #3b82f6;
-  color: white;
+  background: #ffca28;
+  color: #333;
   font-weight: 600;
+  cursor: pointer;
+}
+
+/* 단위 버튼 */
+.unit-toggle {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: transparent;
+  color: #fff;
   font-size: 0.9rem;
-  white-space: nowrap;
-  transition: transform 0.08s ease, box-shadow 0.08s ease,
-    background 0.15s ease;
+  cursor: pointer;
 }
 
-#searchBtn:hover {
-  background: #2563eb;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
-  transform: translateY(-1px);
+/* 현재 위치 버튼 */
+.gps-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
-#searchBtn:active {
-  transform: translateY(0);
-  box-shadow: none;
+/* 메인 */
+.main {
+  margin-top: 16px;
 }
 
-/* ========== 날씨 정보 ========== */
-.weather-info {
+/* 카드 공통 */
+.card {
+  background: rgba(0, 0, 0, 0.35);
+  padding: 16px;
+  border-radius: 16px;
   margin-top: 12px;
-  text-align: center;
-  padding: 12px 10px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
-  min-height: 80px;
+}
+
+/* 숨김 */
+.hidden {
+  display: none;
+}
+
+/* 에러 메시지 */
+.error-message {
+  color: #ffcccb;
+  font-size: 0.9rem;
+}
+
+/* 현재 날씨 카드 */
+.current-header {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-#temp {
-  font-size: 2.4rem;
-  font-weight: 700;
+.current-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-#description {
-  font-size: 1rem;
-  color: #4b5563;
+.city-name {
+  font-size: 1.4rem;
+  font-weight: bold;
 }
 
-#statusMessage {
-  margin-top: 8px;
+.current-date {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.weather-icon {
+  width: 80px;
+  height: 80px;
+}
+
+.temperature {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.description {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* 상세 정보 */
+.current-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.detail-item {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 8px;
+  border-radius: 10px;
   font-size: 0.85rem;
-  text-align: center;
-  color: #6b7280;
-  min-height: 1.2em; /* 레이아웃 튐 방지 */
 }
 
-/* ========== PC 화면에서 살짝 키우기 (반응형 예시) ========== */
-@media (min-width: 768px) {
-  .weather-app {
-    max-width: 480px;
-    padding: 24px 24px 28px;
+/* 공기질 */
+.air-quality p {
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+/* 추천 옷차림 */
+.outfit p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* 예보 카드 */
+.forecast-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.forecast-item {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.forecast-icon {
+  width: 48px;
+  height: 48px;
+}
+
+/* 그래프 카드 */
+.chart-card {
+  padding: 16px;
+}
+
+/* 푸터 */
+.footer {
+  text-align: center;
+  opacity: 0.7;
+  margin-top: 20px;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .weather-app h1 {
-    font-size: 1.6rem;
+  .search-bar {
+    width: 100%;
   }
 
-  #temp {
-    font-size: 2.8rem;
+  .unit-toggle,
+  .gps-btn {
+    align-self: flex-end;
   }
 }
